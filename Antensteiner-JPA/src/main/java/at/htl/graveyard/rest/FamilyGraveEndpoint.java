@@ -11,14 +11,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("familygrave")
-public class FamilyGraveEndpoint {
+public class  FamilyGraveEndpoint {
     @PersistenceContext
     EntityManager em;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFamilyGraves(){
-        TypedQuery<FamilyGrave> familyGraveTypedQuery = em.createQuery("select fg from FamilyGrave fg",FamilyGrave.class);
+        TypedQuery<FamilyGrave> familyGraveTypedQuery = em.createNamedQuery("FamilyGrave.findAll",FamilyGrave.class);
         return Response.ok().entity(familyGraveTypedQuery.getResultList()).build();
     }
 
@@ -33,10 +33,10 @@ public class FamilyGraveEndpoint {
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces
-    public Long postFamilyGrave(FamilyGrave fg){
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postFamilyGrave(FamilyGrave fg){
         em.persist(fg);
-        return fg.getId();
+        return Response.ok().entity(fg).build();
     }
 
     @DELETE

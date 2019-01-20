@@ -6,6 +6,7 @@ import at.htl.graveyard.model.OneManGrave;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.print.attribute.standard.Media;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -19,13 +20,13 @@ public class OneManGraveEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOneManGraves (){
-        TypedQuery<OneManGrave> oneManGraveTypedQuery = em.createQuery("select omg from OneManGrave omg",OneManGrave.class);
+        TypedQuery<OneManGrave> oneManGraveTypedQuery = em.createNamedQuery("OneManGrave.findAll",OneManGrave.class);
         return Response.ok().entity(oneManGraveTypedQuery.getResultList()).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
+    @Path("/{id}")
     public Response getOneManGrave(@PathParam("id")long id){
         OneManGrave omg = em.find(OneManGrave.class,id);
         return Response.ok().entity(omg).build();
@@ -34,12 +35,19 @@ public class OneManGraveEndpoint {
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces
-    public Long postFamilyGrave(OneManGrave omg){
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postFamilyGrave(OneManGrave omg){
         em.persist(omg);
-        return omg.getId();
+        return Response.ok().entity(omg).build();
     }
 
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response put (OneManGrave omg){
+        omg = em.merge(omg);
+        return Response.ok().entity(omg).build();
+    }
     @DELETE
     @Path("{id}")
     @Transactional

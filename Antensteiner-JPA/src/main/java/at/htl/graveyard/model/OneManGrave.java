@@ -1,11 +1,9 @@
 package at.htl.graveyard.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
+@NamedQuery(name = "OneManGrave.findAll", query = "select omg from OneManGrave omg")
 @Entity
 public class OneManGrave extends Grave implements Serializable {
     @Id
@@ -20,8 +18,8 @@ public class OneManGrave extends Grave implements Serializable {
     public OneManGrave() {
     }
 
-    public OneManGrave(Long price, String location, String firstName, String lastName, Long age) {
-        super(price,location);
+    public OneManGrave(Long price, String firstName, String lastName, Long age) {
+        super(price);
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;

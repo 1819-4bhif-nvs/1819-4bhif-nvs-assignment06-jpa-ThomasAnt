@@ -1,16 +1,29 @@
 package at.htl.graveyard.model;
 
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@NamedQueries(
+        {
+                @NamedQuery(name = "Graveyard.findAll", query = "select g from Graveyard g"),
+                //@NamedQuery(name= "Graveyard.findByLocation", query = "select gy from graveyard gy where gy.location like :location")
+        }
+)@Entity
 public class Graveyard implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long numberOfGraves;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "graveyard", orphanRemoval = true)
+    private List<Grave> graves = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "employment",
+            joinColumns = @JoinColumn(name = "graveyard_id"),
+            inverseJoinColumns = @JoinColumn(name = "graveyardkeeper_id"))
+    private List<Graveyardkeeper>  graveyardkeepers = new ArrayList<>();
+
     private Long area;
     private String location;
 
@@ -18,21 +31,11 @@ public class Graveyard implements Serializable {
     public Graveyard() {
     }
 
-    public Graveyard(Long numberOfGraves, Long area, String location) {
-        this.numberOfGraves = numberOfGraves;
+    public Graveyard(Long area, String location) {
         this.area = area;
         this.location = location;
     }
     //endregion
-
-    //region Getter Setter
-    public Long getNumberOfGraves() {
-        return numberOfGraves;
-    }
-
-    public void setNumberOfGraves(Long grabanzahl) {
-        this.numberOfGraves = grabanzahl;
-    }
 
     public Long getArea() {
         return area;
@@ -48,6 +51,34 @@ public class Graveyard implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void addGraveyardkeeper (Graveyardkeeper graveyardkeeper){
+        graveyardkeepers.add(graveyardkeeper);
+        graveyardkeeper.getGraveyards().add(this);
+    }
+
+    public void removeGraveyardkeeper(Graveyardkeeper graveyardkeeper){
+        graveyardkeepers.remove(graveyardkeeper);
+        graveyardkeeper.getGraveyards().remove(graveyardkeeper);
+    }
+
+    public List<Grave> getGraves() {
+        return graves;
+    }
+
+    public List<Graveyardkeeper> getGraveyardkeepers() {
+        return graveyardkeepers;
+    }
+
+    public void addGrave(Grave g) {
+        graves.add(g);
+        g.setGraveyard(this);
+    }
+
+    public void removeGrave(Grave g){
+        graves.remove(g);
+        g.setGraveyard(null);
     }
     //endregion
 }

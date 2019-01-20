@@ -1,5 +1,6 @@
 package at.htl.graveyard.model;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -10,18 +11,26 @@ public abstract class Grave implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonbTransient
+    private Graveyard graveyard;
+
     private Long price;
-    private String location;
 
     //region Constructor
     public Grave() {
     }
 
-    public Grave(Long price, String location) {
+    public Grave(Long price) {
         this.price = price;
-        this.location = location;
     }
     //endregion
+
+
+    @Override
+    public String toString() {
+        return this.id.toString();
+    }
 
     //region Getter Setter
     public Long getId() {
@@ -36,13 +45,14 @@ public abstract class Grave implements Serializable {
         this.price = price;
     }
 
-    public String getLocation() {
-        return location;
+    public Graveyard getGraveyard() {
+        return graveyard;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setGraveyard(Graveyard graveyard) {
+        this.graveyard = graveyard;
     }
+
     //endregion
 
 }
